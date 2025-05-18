@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'TravelHomePage.dart';
+
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
@@ -62,12 +64,49 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
 
-                    // Forgot Password
+                    // Forgot Password Button with Dialog
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
-                          // Add forgot password logic
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              final TextEditingController emailController =
+                              TextEditingController();
+                              return AlertDialog(
+                                title: const Text("Password Recovery"),
+                                content: TextField(
+                                  controller: emailController,
+                                  decoration: const InputDecoration(
+                                    labelText: "Enter your registered email",
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("Cancel"),
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.amber),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              "Recovery link sent to ${emailController.text}"),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text("Send"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                         child: const Text("Forgot Password?"),
                       ),
@@ -77,8 +116,10 @@ class LoginPage extends StatelessWidget {
                     // Login Button
                     ElevatedButton(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Logging in...")),
+                        // Navigate to TravelHomePage on button click
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) =>TravelHomePageApp()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -94,22 +135,26 @@ class LoginPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
                         IconButton(
-                          icon: FaIcon(FontAwesomeIcons.google, color: Colors.red),
+                          icon: FaIcon(FontAwesomeIcons.google,
+                              color: Colors.red),
                           onPressed: null,
                         ),
                         SizedBox(width: 20),
                         IconButton(
-                          icon: FaIcon(FontAwesomeIcons.facebook, color: Colors.blue),
+                          icon: FaIcon(FontAwesomeIcons.facebook,
+                              color: Colors.blue),
                           onPressed: null,
                         ),
                         SizedBox(width: 20),
                         IconButton(
-                          icon: FaIcon(FontAwesomeIcons.twitter, color: Colors.lightBlue),
+                          icon: FaIcon(FontAwesomeIcons.twitter,
+                              color: Colors.lightBlue),
                           onPressed: null,
                         ),
                         SizedBox(width: 20),
                         IconButton(
-                          icon: FaIcon(FontAwesomeIcons.instagram, color: Colors.purple),
+                          icon: FaIcon(FontAwesomeIcons.instagram,
+                              color: Colors.purple),
                           onPressed: null,
                         ),
                       ],
