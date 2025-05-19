@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'Login.dart';
+import 'Onboarding.dart';
 
 void main() {
   runApp(
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.amber,
         useMaterial3: true,
       ),
-      home: const LoginPage(),
+      home: const OnboardingPage(),
     );
   }
 }
