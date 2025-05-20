@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travellingapp/Weather.dart';
 
 void main() {
   runApp(TravelHomePageApp());
@@ -60,6 +61,7 @@ class _HomePageState extends State<HomePage> {
       {'icon': Icons.hotel, 'label': 'Hotels', 'color': Colors.green},
       {'icon': Icons.restaurant, 'label': 'Food', 'color': Colors.red},
       {'icon': Icons.directions_bike, 'label': 'Adventure', 'color': Colors.orange},
+
     ];
 
     return Padding(
@@ -314,6 +316,20 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => WeatherApp()),
+          );
+          // TODO: Implement actual weather detection logic here
+        },
+        icon: Icon(Icons.cloud),
+        label: Text('Weather'),
+        backgroundColor: Colors.amber,
+      ),
+
       appBar: AppBar(
         title: Text('Travel Home Page'),
       ),
@@ -341,7 +357,9 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: 'Saved'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+
         ],
+
       ),
     );
   }
