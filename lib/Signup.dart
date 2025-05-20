@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -9,122 +10,110 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  double _opacity = 0.0;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  @override
-  void initState() {
-    super.initState();
-    Timer(Duration(milliseconds: 500), () {
-      setState(() {
-        _opacity = 1.0;
-      });
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPassController = TextEditingController();
+
+  bool _isLoading = false;
+
+  Future<void> _registerUser() async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPassController.text.trim();
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match")),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
     });
+
+    try {
+      // Firebase Auth: Email & Password Registration
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Registration Successful")),
+      );
+
+      Navigator.pop(context); // or navigate to login/home screen
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.message}")),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    ButtonStyle buttonStyle = ElevatedButton.styleFrom(
-      minimumSize: Size(double.infinity, 50),
-      backgroundColor: Colors.amber,
-    );
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('TravelLovers'),
+        title: const Text('Sign Up'),
         backgroundColor: Colors.amber,
       ),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background image with fade-in
-          AnimatedOpacity(
-            duration: Duration(seconds: 2),
-            opacity: _opacity,
-            child: Image.asset(
-              'assets/picture4.jpg',
-              fit: BoxFit.cover,
-            ),
+          Image.asset(
+            'assets/picture4.jpg',
+            fit: BoxFit.cover,
           ),
-
-          // Overlay for better readability
           Container(color: Colors.black.withOpacity(0.4)),
-
-          // Centered form
           Center(
             child: SingleChildScrollView(
               child: Container(
-
-
                 width: 360,
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.9),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    const Text(
                       "Sign Up",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.amber[800],
-                      ),
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'First Name',
-                      ),
+                      controller: _emailController,
+                      decoration: const InputDecoration(labelText: "Email"),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Last Name',
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Current Location',
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Email Address',
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    TextField(
+                      controller: _passwordController,
                       obscureText: true,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Password',
-                      ),
+                      decoration: const InputDecoration(labelText: "Password"),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextField(
+                      controller: _confirmPassController,
                       obscureText: true,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Confirm Password',
-                      ),
+                      decoration: const InputDecoration(labelText: "Confirm Password"),
                     ),
-                    SizedBox(height: 25),
-                    ElevatedButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Registration Submitted")),
-                        );
-                      },
-                      style: buttonStyle,
-                      child: Text("Submit"),
+                    const SizedBox(height: 25),
+                    _isLoading
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                      onPressed: _registerUser,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        backgroundColor: Colors.amber,
+                      ),
+                      child: const Text("Submit"),
                     ),
                   ],
                 ),
